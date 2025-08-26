@@ -34,7 +34,7 @@ async function checkRequiredRole(interaction) {
 
     if (!hasRequiredRole(interaction.member)) {
         await interaction.reply({
-            content: `❌ **Access Denied**\n\nYou need the required role to use this command.\n\nPlease contact a server administrator if you believe you should have access.`,
+            content: `❌ **Access Denied**\n\nYou need the required role to use this command.\n\n**Required Role ID:** \`${REQUIRED_ROLE_ID}\`\n\nPlease contact a server administrator if you believe you should have access.`,
             ephemeral: true
         });
         return false;

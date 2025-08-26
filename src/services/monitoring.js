@@ -190,12 +190,16 @@ class MonitoringService {
                 const channel = await this.client.channels.fetch(watch.discord_channel_id);
                 
                 if (channel) {
+                    // Create message content with role mention
+                    const roleMention = '<@&1292228881582919781>';
+                    const messageContent = `${roleMention} New post from **${channelInfo.displayName}** ${post.url}`;
+                    
                     await channel.send({
-                        content: `New post from **${channelInfo.displayName}** ${post.url}`,
+                        content: messageContent,
                         embeds: [embed]
                     });
                     
-                    console.log(`✅ Notified #${channel.name} in ${channel.guild.name}`);
+                    console.log(`✅ Notified #${channel.name} in ${channel.guild.name} with role mention`);
                 } else {
                     console.log(`⚠️  Could not find Discord channel ${watch.discord_channel_id}`);
                 }

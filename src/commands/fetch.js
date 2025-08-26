@@ -86,62 +86,58 @@ module.exports = {
 
             // Create embed for the post
             const embed = new EmbedBuilder()
-                .setTitle(`📝 Latest Post from ${selectedChannel.displayName}`)
-                .setURL(latestPost.url)
-                .setColor('#FF0000')
+                .setTitle(`Latest Post from ${selectedChannel.displayName} ${latestPost.url}`)
+                // .setURL(latestPost.url)
+                .setColor('#00FF00')
                 .setTimestamp();
 
-            // Add channel info
+            // Add channel info with profile picture
             embed.setAuthor({
-                name: `${selectedChannel.displayName} (${selectedChannel.handle})`,
-                url: selectedChannel.url
+                name: `${selectedChannel.displayName}`,
+                url: selectedChannel.url,
+                iconURL: selectedChannel.avatarUrl || `https://yt3.ggpht.com/ytc/default_profile.jpg`
             });
 
-            // Add post content
+            // Add thumbnail with YouTube profile picture in top right corner
+            embed.setThumbnail(selectedChannel.avatarUrl || `https://yt3.ggpht.com/ytc/default_profile.jpg`);
+
+            // Add post content with link
+            const postLink = `[View Post](${latestPost.url})`;
+            let description = '';
+            
             if (latestPost.content) {
-                const content = latestPost.content.length > 2000 ? 
-                    latestPost.content.substring(0, 1997) + '...' : 
+                description = latestPost.content.length > 1950 ? 
+                    latestPost.content.substring(0, 1947) + '...' : 
                     latestPost.content;
-                embed.setDescription(content);
             } else {
-                embed.setDescription('*No text content*');
+                description = '*No text content*';
             }
+            
+            // Add post link at the end
+            description += `\n\n${postLink}`;
+            embed.setDescription(description);
 
             // Add image if present
             if (latestPost.images && latestPost.images.length > 0) {
                 embed.setImage(latestPost.images[0].url);
             }
 
-            // Add post details
-            embed.addFields([
-                {
-                    name: '🆔 Post ID',
-                    value: `\`${latestPost.id}\``,
-                    inline: true
-                },
-                {
-                    name: '⏰ Published',
-                    value: latestPost.publishedTime || 'Unknown',
-                    inline: true
-                },
-                {
-                    name: '🔗 Direct Link',
-                    value: `[View on YouTube](${latestPost.url})`,
-                    inline: true
-                }
-            ]);
-
-            // Add footer with fetch info
-            const footerText = forceUpdate ? 
-                'Post fetched and updated in database' : 
-                'Post fetched (not stored in database)';
-            
-            embed.setFooter({
-                text: `${footerText} • Found ${result.posts.length} total posts`
-            });
+            // // Add post details
+            // embed.addFields([
+            //     {
+            //         name: 'Posted ',
+            //         value: latestPost.publishedTime || 'Unknown',
+            //         inline: true
+            //     },
+            //     {
+            //         name: 'Link ',
+            //         value: `[View on YouTube](${latestPost.url})`,
+            //         inline: true
+            //     }
+            // ]);
 
             await interaction.editReply({
-                content: `✅ Latest post from **${selectedChannel.displayName}**:`,
+                content: `Latest post from **${selectedChannel.displayName}**:`,
                 embeds: [embed]
             });
 

@@ -209,6 +209,26 @@ class YouTubeService {
             
             console.log('Analyzing YouTube initial data structure...');
             
+            // Extract channel profile picture
+            let channelAvatar = null;
+            const channelMetadata = data?.metadata?.channelMetadataRenderer;
+            if (channelMetadata?.avatar?.thumbnails) {
+                // Get the highest quality avatar
+                const avatars = channelMetadata.avatar.thumbnails;
+                channelAvatar = avatars[avatars.length - 1]?.url;
+                console.log('Found channel avatar:', channelAvatar);
+            }
+            
+            // Also try to get from header
+            if (!channelAvatar) {
+                const header = data?.header?.c4TabbedHeaderRenderer;
+                if (header?.avatar?.thumbnails) {
+                    const avatars = header.avatar.thumbnails;
+                    channelAvatar = avatars[avatars.length - 1]?.url;
+                    console.log('Found header avatar:', channelAvatar);
+                }
+            }
+            
             // Log available tabs for debugging
             const tabs = data?.contents?.twoColumnBrowseResultsRenderer?.tabs;
             if (tabs) {

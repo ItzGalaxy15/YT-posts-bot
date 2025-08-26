@@ -143,24 +143,36 @@ class MonitoringService {
 
     async notifyDiscordChannels(watches, channelInfo, post) {
         const embed = new EmbedBuilder()
-            .setTitle(`📝 New Post from ${channelInfo.displayName}`)
-            .setURL(post.url)
-            .setColor('#FF0000')
+            .setTitle(`New Post from ${channelInfo.displayName} ${post.url}`)
+            // .setURL(post.url)
+            .setColor('#00FF00')
             .setTimestamp();
 
-        // Add channel info
+        // Add channel info with profile picture
         embed.setAuthor({
-            name: `${channelInfo.displayName} (${channelInfo.handle})`,
-            url: channelInfo.url
+            name: `${channelInfo.displayName}`,
+            url: channelInfo.url,
+            iconURL: channelInfo.avatarUrl || `https://yt3.ggpht.com/ytc/default_profile.jpg`
         });
 
-        // Add post content
+        // Add thumbnail with YouTube profile picture in top right corner
+        embed.setThumbnail(channelInfo.avatarUrl || `https://yt3.ggpht.com/ytc/default_profile.jpg`);
+        
+        // Add post content with link
+        const postLink = `[View Post](${post.url})`;
+        let description = '';
+        
         if (post.content) {
-            embed.setDescription(post.content.length > 2000 ? 
-                post.content.substring(0, 1997) + '...' : 
-                post.content
-            );
+            description = post.content.length > 1950 ? 
+                post.content.substring(0, 1947) + '...' : 
+                post.content;
+        } else {
+            description = '*No text content*';
         }
+        
+        // Add post link at the end
+        description += `\n\n${postLink}`;
+        embed.setDescription(description);
 
         // Add image if present
         if (post.images && post.images.length > 0) {
@@ -179,7 +191,7 @@ class MonitoringService {
                 
                 if (channel) {
                     await channel.send({
-                        content: `🔔 New post from **${channelInfo.displayName}**!`,
+                        content: `New post from **${channelInfo.displayName}**!`,
                         embeds: [embed]
                     });
                     

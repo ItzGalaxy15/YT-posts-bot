@@ -10,7 +10,16 @@ module.exports = {
 
     async execute(interaction) {
         try {
-            await interaction.deferReply();
+            // Check if user is the bot owner
+            const ownerId = process.env.OWNER_USER_ID;
+            if (ownerId && interaction.user.id !== ownerId) {
+                return await interaction.reply({
+                    content: '❌ This command is restricted to the bot owner only.',
+                    ephemeral: true
+                });
+            }
+            
+            await interaction.deferReply({ ephemeral: true }); // Make status response only visible to you
 
             // Get system info
             const uptime = process.uptime();

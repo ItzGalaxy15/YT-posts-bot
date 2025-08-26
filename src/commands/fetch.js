@@ -49,7 +49,7 @@ module.exports = {
             }
 
             await interaction.editReply({
-                content: `Fetching latest post from **${selectedChannel.displayName}** ${latestPost.url}`
+                content: `🔍 Fetching latest post from **${selectedChannel.displayName}**...`
             });
 
             // Fetch posts from YouTube
@@ -137,7 +137,7 @@ module.exports = {
             // ]);
 
             await interaction.editReply({
-                content: `Latest post from **${selectedChannel.displayName}** ${latestPost.url}`,
+                content: `\u2705 Latest post from **${selectedChannel.displayName}**: ${latestPost.url}`,
                 embeds: [embed]
             });
 

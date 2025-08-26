@@ -42,6 +42,9 @@ module.exports = {
 
         const ytChannelId = interaction.options.getString('youtube_channel');
         const forceUpdate = interaction.options.getBoolean('force_update') || false;
+        
+        // Role mention for notifications
+        const roleMention = '<@&1292228881582919781>';
 
         try {
             await interaction.deferReply();
@@ -143,7 +146,7 @@ module.exports = {
             // ]);
 
             await interaction.editReply({
-                content: `Latest post from **${selectedChannel.displayName}**: ${latestPost.url}`,
+                content: `${roleMention} Latest post from **${selectedChannel.displayName}**: ${latestPost.url}`,
                 embeds: [embed]
             });
 

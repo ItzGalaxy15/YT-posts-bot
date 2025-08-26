@@ -3,7 +3,7 @@
  */
 
 // Get the role ID from environment variables
-const REQUIRED_ROLE_ID = process.env.STAFF_ROLE_ID;
+const REQUIRED_ROLE_ID = process.env.OWNER_USER_ID;
 
 /**
  * Check if a user has the required role to use bot commands

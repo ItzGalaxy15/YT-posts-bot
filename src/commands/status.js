@@ -16,11 +16,11 @@ module.exports = {
                 return;
             }
 
-            // Check if user is the bot owner
-            const ownerId = process.env.OWNER_USER_ID;
-            if (ownerId && interaction.user.id !== ownerId) {
+            // Check if user is the bot staff
+            const staffId = process.env.STAFF_ROLE_ID;
+            if (staffId && interaction.user.id !== staffId) {
                 return await interaction.reply({
-                    content: '❌ This command is restricted to the bot owner only.',
+                    content: '❌ This command is restricted to the bot staff only.',
                     ephemeral: true
                 });
             }

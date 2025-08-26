@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Check if STAFF_ROLE_ID is configured
-if (!process.env.OWNER_USER_ID) {
+if (!process.env.STAFF_ROLE_ID) {
     console.error('❌ STAFF_ROLE_ID environment variable is not set!');
     console.error('Please add STAFF_ROLE_ID to your .env file');
     process.exit(1);

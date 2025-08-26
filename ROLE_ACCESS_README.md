@@ -48,7 +48,7 @@ All bot commands now require the specified role:
 - `/removewatch` - Stop watching a YouTube channel
 - `/watchlist` - Show active watches
 - `/list` - Show available YouTube channels
-- `/status` - Show bot status (also requires bot owner role if configured)
+- `/status` - Show bot status (also requires staff role if configured)
 
 ## Security Features
 

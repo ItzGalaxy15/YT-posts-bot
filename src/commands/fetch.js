@@ -49,7 +49,7 @@ module.exports = {
             }
 
             await interaction.editReply({
-                content: `🔍 Fetching latest post from **${selectedChannel.displayName}**...`
+                content: `Fetching latest post from **${selectedChannel.displayName}** ${latestPost.url}`
             });
 
             // Fetch posts from YouTube
@@ -86,7 +86,7 @@ module.exports = {
 
             // Create embed for the post
             const embed = new EmbedBuilder()
-                .setTitle(`Latest Post from ${selectedChannel.displayName} ${latestPost.url}`)
+                // .setTitle(`Latest Post from ${selectedChannel.displayName}`)
                 // .setURL(latestPost.url)
                 .setColor('#00FF00')
                 .setTimestamp();
@@ -137,7 +137,7 @@ module.exports = {
             // ]);
 
             await interaction.editReply({
-                content: `Latest post from **${selectedChannel.displayName}**:`,
+                content: `Latest post from **${selectedChannel.displayName}** ${latestPost.url}`,
                 embeds: [embed]
             });
 

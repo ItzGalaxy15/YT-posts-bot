@@ -143,7 +143,7 @@ class MonitoringService {
 
     async notifyDiscordChannels(watches, channelInfo, post) {
         const embed = new EmbedBuilder()
-            .setTitle(`New Post from ${channelInfo.displayName} ${post.url}`)
+            // .setTitle(`New Post from ${channelInfo.displayName}`)
             // .setURL(post.url)
             .setColor('#00FF00')
             .setTimestamp();
@@ -191,7 +191,7 @@ class MonitoringService {
                 
                 if (channel) {
                     await channel.send({
-                        content: `New post from **${channelInfo.displayName}**!`,
+                        content: `New post from **${channelInfo.displayName}** ${post.url}`,
                         embeds: [embed]
                     });
                     

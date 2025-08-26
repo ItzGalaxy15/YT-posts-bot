@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const database = require('../services/database');
 const monitoringService = require('../services/monitoring');
 const channelsConfig = require('../config/channels.json');
+const { checkRequiredRole } = require('../utils/permissions');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,6 +11,11 @@ module.exports = {
 
     async execute(interaction) {
         try {
+            // Check if user has required role
+            if (!(await checkRequiredRole(interaction))) {
+                return;
+            }
+
             // Check if user is the bot owner
             const ownerId = process.env.OWNER_USER_ID;
             if (ownerId && interaction.user.id !== ownerId) {

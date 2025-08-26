@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const youtube = require('../services/youtube');
 const database = require('../services/database');
 const channelsConfig = require('../config/channels.json');
+const { checkRequiredRole } = require('../utils/permissions');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -34,6 +35,11 @@ module.exports = {
     },
 
     async execute(interaction) {
+        // Check if user has required role
+        if (!(await checkRequiredRole(interaction))) {
+            return;
+        }
+
         const ytChannelId = interaction.options.getString('youtube_channel');
         const forceUpdate = interaction.options.getBoolean('force_update') || false;
 
@@ -102,7 +108,7 @@ module.exports = {
             embed.setThumbnail(selectedChannel.avatarUrl || `https://yt3.ggpht.com/ytc/default_profile.jpg`);
 
             // Add post content with link
-            const postLink = `[View Post](${latestPost.url})`;
+            // const postLink = `[View Post](${latestPost.url})`;
             let description = '';
             
             if (latestPost.content) {
@@ -114,7 +120,7 @@ module.exports = {
             }
             
             // Add post link at the end
-            description += `\n\n${postLink}`;
+            // description += `\n\n${postLink}`;
             embed.setDescription(description);
 
             // Add image if present
@@ -137,7 +143,7 @@ module.exports = {
             // ]);
 
             await interaction.editReply({
-                content: `\u2705 Latest post from **${selectedChannel.displayName}**: ${latestPost.url}`,
+                content: `Latest post from **${selectedChannel.displayName}**: ${latestPost.url}`,
                 embeds: [embed]
             });
 

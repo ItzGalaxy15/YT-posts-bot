@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const database = require('../services/database');
 const channelsConfig = require('../config/channels.json');
+const { checkRequiredRole } = require('../utils/permissions');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,6 +9,11 @@ module.exports = {
         .setDescription('Show all YouTube channels being watched and their Discord channels'),
 
     async execute(interaction) {
+        // Check if user has required role
+        if (!(await checkRequiredRole(interaction))) {
+            return;
+        }
+
         const guildId = interaction.guild.id;
 
         try {

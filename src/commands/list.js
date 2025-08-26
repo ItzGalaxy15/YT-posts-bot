@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const channelsConfig = require('../config/channels.json');
+const { checkRequiredRole } = require('../utils/permissions');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,6 +8,11 @@ module.exports = {
         .setDescription('Show all available YouTube channels that can be watched'),
 
     async execute(interaction) {
+        // Check if user has required role
+        if (!(await checkRequiredRole(interaction))) {
+            return;
+        }
+
         try {
             const embed = new EmbedBuilder()
                 .setTitle('📋 Available YouTube Channels')

@@ -10,6 +10,7 @@ A Discord bot that monitors YouTube channel posts and automatically shares them 
 - 🎛️ **Easy Management**: Simple slash commands to add/remove channel watches
 - 🗄️ **Database Storage**: Persistent storage using Supabase
 - ⚙️ **Auto-complete**: Smart auto-completion for channel selection
+- 🔒 **Role-Based Access**: Commands restricted to users with specific roles
 
 ## Commands 🤖
 
@@ -19,6 +20,23 @@ A Discord bot that monitors YouTube channel posts and automatically shares them 
 - `/list` - Show all available YouTube channels
 - `/fetch <youtube-channel> [force_update]` - Manually fetch and display the latest post
 - `/status` - Show bot status, monitoring info, and system statistics
+
+## Security & Access Control 🔒
+
+**Important**: All bot commands are now restricted to users with a specific Discord role.
+
+### How It Works
+- Commands are hidden from users who don't have the required role
+- Permission checks happen before command execution
+- Clear error messages guide users on how to get access
+- All permission errors are private (ephemeral messages)
+
+### Setup
+1. Create a role in your Discord server:
+2. Assign this role to users who should have access to bot commands
+3. Users without this role will not see any bot commands
+
+For detailed setup instructions, see [ROLE_ACCESS_README.md](ROLE_ACCESS_README.md).
 
 ## Setup Instructions 🚀
 

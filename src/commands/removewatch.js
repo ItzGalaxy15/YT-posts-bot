@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const database = require('../services/database');
 const channelsConfig = require('../config/channels.json');
+const { checkRequiredRole } = require('../utils/permissions');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -51,6 +52,11 @@ module.exports = {
     },
 
     async execute(interaction) {
+        // Check if user has required role
+        if (!(await checkRequiredRole(interaction))) {
+            return;
+        }
+
         const ytChannelId = interaction.options.getString('youtube_channel');
         const discordChannel = interaction.options.getChannel('discord_channel');
         const guildId = interaction.guild.id;

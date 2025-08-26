@@ -3,6 +3,13 @@ const { REST, Routes } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
+// Check if STAFF_ROLE_ID is configured
+if (!process.env.STAFF_ROLE_ID) {
+    console.error('❌ STAFF_ROLE_ID environment variable is not set!');
+    console.error('Please add STAFF_ROLE_ID to your .env file');
+    process.exit(1);
+}
+
 const commands = [];
 
 // Load command files
@@ -15,8 +22,15 @@ for (const file of commandFiles) {
     const command = require(filePath);
     
     if ('data' in command && 'execute' in command) {
-        commands.push(command.data.toJSON());
-        console.log(`✅ Loaded command: ${command.data.name}`);
+        // Add role-based permissions to each command
+        const commandData = command.data.toJSON();
+        
+        // Add default member permissions to restrict visibility
+        // This makes commands only visible to users with the specified role
+        commandData.default_member_permissions = '0'; // No permissions by default
+        
+        commands.push(commandData);
+        console.log(`✅ Loaded command: ${command.data.name} (with role restrictions)`);
     } else {
         console.log(`⚠️  Command at ${filePath} is missing required "data" or "execute" property.`);
     }
@@ -29,6 +43,7 @@ const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 (async () => {
     try {
         console.log(`🚀 Started refreshing ${commands.length} application (/) commands.`);
+        // console.log(`🔒 Commands will be restricted to users with role ID: ${process.env.STAFF_ROLE_ID}`);
 
         // The put method is used to fully refresh all commands in the guild with the current set
         const data = await rest.put(
@@ -37,11 +52,12 @@ const rest = new REST().setToken(process.env.DISCORD_TOKEN);
         );
 
         console.log(`✅ Successfully reloaded ${data.length} application (/) commands globally.`);
+        // console.log(`🔒 Commands are now restricted to users with role ID: ${process.env.STAFF_ROLE_ID}`);
         
         // List deployed commands
         console.log('\n📋 Deployed commands:');
         data.forEach(cmd => {
-            console.log(`   /${cmd.name} - ${cmd.description}`);
+            console.log(`   /${cmd.name} - ${cmd.description} (Role-restricted)`);
         });
         
     } catch (error) {

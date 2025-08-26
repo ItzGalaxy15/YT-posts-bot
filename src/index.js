@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
 const database = require('./services/database');
 const monitoringService = require('./services/monitoring');
 
@@ -117,6 +118,27 @@ process.on('SIGTERM', () => {
     monitoringService.stop();
     client.destroy();
     process.exit(0);
+});
+
+// Create a simple HTTP server for Render health checks
+const PORT = process.env.PORT || 3000;
+const server = http.createServer((req, res) => {
+    if (req.url === '/health' || req.url === '/') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+            status: 'healthy',
+            bot: client.user ? `${client.user.tag} is online` : 'Starting up...',
+            guilds: client.guilds?.cache.size || 0,
+            uptime: process.uptime()
+        }));
+    } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Not found');
+    }
+});
+
+server.listen(PORT, () => {
+    console.log(`🌐 Health check server running on port ${PORT}`);
 });
 
 // Login with Discord token

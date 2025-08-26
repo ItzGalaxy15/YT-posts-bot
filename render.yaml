@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: yt-posts-bot
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    # Auto-deploy from your main branch
+    autoDeploy: true

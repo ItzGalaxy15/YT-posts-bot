@@ -195,6 +195,74 @@ The bot provides detailed logging:
 - ❌ Errors
 - 🔍 Monitoring activities
 
+## Deployment to Render 🚀
+
+### Prerequisites
+- GitHub account
+- Render account (free at [render.com](https://render.com))
+- Your Discord bot token and Supabase credentials
+
+### Step 1: Push to GitHub
+
+1. Create a new repository on GitHub
+2. Push your code:
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git branch -M main
+   git remote add origin https://github.com/yourusername/yt-posts-bot.git
+   git push -u origin main
+   ```
+
+### Step 2: Deploy to Render
+
+1. Go to [render.com](https://render.com) and sign up/login
+2. Click "New" → "Web Service"
+3. Connect your GitHub repository
+4. Configure the service:
+   - **Name**: `yt-posts-bot`
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Plan**: Free
+
+### Step 3: Add Environment Variables
+
+In the Render dashboard, go to your service → Environment tab and add:
+
+```
+DISCORD_TOKEN=your_discord_bot_token
+DISCORD_CLIENT_ID=your_discord_client_id
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+CHECK_INTERVAL_MINUTES=10
+NODE_ENV=production
+```
+
+### Step 4: Deploy Commands
+
+After your bot is deployed and running:
+
+1. Go to the Render dashboard → your service → Shell tab
+2. Run: `npm run deploy`
+3. This will register your slash commands with Discord
+
+### Step 5: Monitor Your Bot
+
+- **Health Check**: Your bot will be available at `https://your-service.onrender.com/health`
+- **Logs**: Check the logs in Render dashboard to see if everything is working
+- **Auto-Deploy**: Any push to your main branch will automatically redeploy
+
+### Free Tier Limitations
+
+⚠️ **Important**: Render's free tier has some limitations:
+- **Spins down after 15 minutes of inactivity**
+- **750 hours/month** (about 24/7 for one service)
+- **Cold starts**: Takes 30-60 seconds to wake up
+
+**Solution**: The bot includes a health check endpoint that you can ping periodically to keep it awake. Consider using a service like [UptimeRobot](https://uptimerobot.com) (free) to ping your bot every 5 minutes.
+
 ## Development 👨‍💻
 
 ### Project Structure

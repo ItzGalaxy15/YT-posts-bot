@@ -17,6 +17,8 @@ A Discord bot that monitors YouTube channel posts and automatically shares them 
 - `/removewatch <youtube-channel> <discord-channel>` - Stop watching a YouTube channel
 - `/watchlist` - Show all channels being watched in your server
 - `/list` - Show all available YouTube channels
+- `/fetch <youtube-channel> [force_update]` - Manually fetch and display the latest post
+- `/status` - Show bot status, monitoring info, and system statistics
 
 ## Setup Instructions 🚀
 
@@ -145,10 +147,28 @@ Modify `CHECK_INTERVAL_MINUTES` in your `.env` file to change how often the bot 
 /watchlist
 → Shows: Galaxyy being watched in #youtube-posts
 
+/fetch itzgalaxyy15
+→ ✅ Latest post from **Galaxyy**: [Rich embed with post content]
+
+/fetch itzgalaxyy15 force_update:True
+→ ✅ Latest post fetched and updated in database
+
 When a new post is published:
 → 🔔 New post from **Galaxyy**!
    [Rich embed with post content and image]
 ```
+
+### Manual Fetch Command
+
+The `/fetch` command is perfect for:
+- **Catching up** on missed posts
+- **Testing** if the bot can access a channel
+- **Previewing** the latest post before setting up watches
+- **Force updating** the database with the latest post
+
+**Usage Examples:**
+- `/fetch itzgalaxyy15` - Just display the latest post
+- `/fetch itzgalaxyy15 force_update:True` - Display AND update database
 
 ## Database Schema 🗄️
 

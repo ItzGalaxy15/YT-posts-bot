@@ -8,8 +8,7 @@
     "dev": "nodemon src/index.js",
     "deploy": "node src/deploy-commands.js",
     "build": "npm install",
-    "setup": "npm install && npm run deploy",
-    "test-permissions": "node src/utils/test-permissions.js"
+    "setup": "npm install && npm run deploy"
   },
   "engines": {
     "node": ">=18.0.0",

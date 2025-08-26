@@ -16,16 +16,7 @@ module.exports = {
                 return;
             }
 
-            // Check if user is the bot staff
-            const staffId = process.env.STAFF_ROLE_ID;
-            if (staffId && interaction.user.id !== staffId) {
-                return await interaction.reply({
-                    content: '❌ This command is restricted to the bot staff only.',
-                    ephemeral: true
-                });
-            }
-            
-            await interaction.deferReply({ ephemeral: true }); // Make status response only visible to you
+            await interaction.deferReply({ ephemeral: true });
 
             // Get system info
             const uptime = process.uptime();

@@ -147,7 +147,8 @@ module.exports = {
 
             await interaction.editReply({
                 content: `${roleMention} Latest post from **${selectedChannel.displayName}**: ${latestPost.url}`,
-                embeds: [embed]
+                embeds: [embed],
+                allowedMentions: { roles: ['1292228881582919781'] }
             });
 
             console.log(`Manual fetch: ${selectedChannel.displayName} -> ${latestPost.id} by ${interaction.user.tag}`);

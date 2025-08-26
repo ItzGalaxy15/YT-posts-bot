@@ -190,13 +190,14 @@ class MonitoringService {
                 const channel = await this.client.channels.fetch(watch.discord_channel_id);
                 
                 if (channel) {
-                    // Create message content with role mention
-                    const roleMention = '<@&1292228881582919781>';
+                    // Create message content with role mention that will actually ping
+                    const roleMention = `<@&1292228881582919781>`;
                     const messageContent = `${roleMention} New post from **${channelInfo.displayName}** ${post.url}`;
                     
                     await channel.send({
                         content: messageContent,
-                        embeds: [embed]
+                        embeds: [embed],
+                        allowedMentions: { roles: ['1292228881582919781'] }
                     });
                     
                     console.log(`✅ Notified #${channel.name} in ${channel.guild.name} with role mention`);

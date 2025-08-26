@@ -10,7 +10,8 @@ const monitoringService = require('./services/monitoring');
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMembers
     ]
 });
 

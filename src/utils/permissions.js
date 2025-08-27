@@ -2,8 +2,9 @@
  * Permission utilities for role-based access control
  */
 
-// Get the role ID from environment variables
+// Get the role IDs from environment variables
 const REQUIRED_ROLE_ID = process.env.STAFF_ROLE_ID;
+const NOTIFICATION_ROLE_ID = process.env.NOTIFICATION_ROLE_ID;
 
 /**
  * Check if a user has the required role to use bot commands
@@ -58,9 +59,58 @@ function isConfigured() {
     return !!REQUIRED_ROLE_ID;
 }
 
+/**
+ * Get the notification role ID for reference
+ * @returns {string} - The notification role ID or undefined if not configured
+ */
+function getNotificationRoleId() {
+    return NOTIFICATION_ROLE_ID;
+}
+
+/**
+ * Check if the notification role is properly configured
+ * @returns {boolean} - True if NOTIFICATION_ROLE_ID is set, false otherwise
+ */
+function isNotificationRoleConfigured() {
+    return !!NOTIFICATION_ROLE_ID;
+}
+
+/**
+ * Validate that a notification role exists in a guild
+ * @param {Discord.Guild} guild - The guild to check
+ * @returns {Object} - { valid: boolean, role: Role|null, error: string|null }
+ */
+function validateNotificationRole(guild) {
+    if (!NOTIFICATION_ROLE_ID) {
+        return {
+            valid: false,
+            role: null,
+            error: 'NOTIFICATION_ROLE_ID is not configured'
+        };
+    }
+
+    const role = guild.roles.cache.get(NOTIFICATION_ROLE_ID);
+    if (!role) {
+        return {
+            valid: false,
+            role: null,
+            error: `Role with ID ${NOTIFICATION_ROLE_ID} not found in guild ${guild.name}`
+        };
+    }
+
+    return {
+        valid: true,
+        role: role,
+        error: null
+    };
+}
+
 module.exports = {
     hasRequiredRole,
     checkRequiredRole,
     getRequiredRoleId,
-    isConfigured
+    isConfigured,
+    getNotificationRoleId,
+    isNotificationRoleConfigured,
+    validateNotificationRole
 };

@@ -43,8 +43,8 @@ module.exports = {
         const ytChannelId = interaction.options.getString('youtube_channel');
         const forceUpdate = interaction.options.getBoolean('force_update') || false;
         
-        // Role mention for notifications
-        const roleMention = '<@&1292228881582919781>';
+        // Get notification role ID from environment variables
+        const notificationRoleId = process.env.NOTIFICATION_ROLE_ID;
 
         try {
             await interaction.deferReply();
@@ -145,10 +145,30 @@ module.exports = {
             //     }
             // ]);
 
+            // Build message content with optional role mention at the beginning
+            let messageContent = `Latest post from **${selectedChannel.displayName}**: ${latestPost.url}`;
+            let allowedMentions = {};
+            
+            // Add role mention at the beginning if configured
+            if (notificationRoleId) {
+                // Verify the role exists in the guild
+                const role = interaction.guild.roles.cache.get(notificationRoleId);
+                if (role) {
+                    const roleMention = `<@&${notificationRoleId}>`;
+                    messageContent = `${roleMention} ${messageContent}`;
+                    allowedMentions = { roles: [notificationRoleId] };
+                    console.log(`🔔 Adding role mention for @${role.name} (${notificationRoleId}) in fetch command`);
+                } else {
+                    console.log(`⚠️  Notification role ${notificationRoleId} not found in guild ${interaction.guild.name}`);
+                }
+            } else {
+                console.log(`ℹ️  No notification role configured - fetch command sending without role mention`);
+            }
+
             await interaction.editReply({
-                content: `${roleMention} Latest post from **${selectedChannel.displayName}**: ${latestPost.url}`,
+                content: messageContent,
                 embeds: [embed],
-                allowedMentions: { roles: ['1292228881582919781'] }
+                allowedMentions: allowedMentions
             });
 
             console.log(`Manual fetch: ${selectedChannel.displayName} -> ${latestPost.id} by ${interaction.user.tag}`);

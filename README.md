@@ -93,6 +93,8 @@ npm install
    SUPABASE_URL=your_supabase_project_url_here
    SUPABASE_ANON_KEY=your_supabase_anon_key_here
    CHECK_INTERVAL_MINUTES=10
+   STAFF_ROLE_ID=your_staff_role_id_here
+   NOTIFICATION_ROLE_ID=your_notification_role_id_here
    ```
 
 ### Step 6: Deploy Slash Commands
@@ -139,6 +141,26 @@ Edit `src/config/channels.json` to add more channels:
   ]
 }
 ```
+
+### Role Configuration
+
+The bot uses two different roles for different purposes:
+
+#### STAFF_ROLE_ID
+- **Purpose**: Controls who can use bot commands
+- **Required**: Yes (commands won't work without it)
+- **Setup**: Create a role in Discord, copy its ID, and set it in your .env file
+
+#### NOTIFICATION_ROLE_ID  
+- **Purpose**: Role to mention when new YouTube posts are shared
+- **Required**: No (notifications work without it, just no role mentions)
+- **Setup**: Create or use an existing role, copy its ID, and set it in your .env file
+- **Example**: `@Everyone`, `@YouTube Notifications`, `@Community Updates`
+
+**How to get Role IDs:**
+1. Enable Developer Mode in Discord (Settings → Advanced → Developer Mode)
+2. Right-click on the role → Copy ID
+3. Paste the ID into your `.env` file
 
 ### Adjusting Check Interval
 

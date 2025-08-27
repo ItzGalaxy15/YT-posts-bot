@@ -30,9 +30,17 @@ In your Discord server:
 3. Copy the role ID (right-click the role → Copy ID)
 4. Put the role ID into your own .env
 
-### 2. Assign the Role
-- Give this role to users who should have access to bot commands
-- Users without this role will not see any bot commands in Discord
+### 2. Configure Notification Role (Optional)
+In your Discord server:
+1. Create a role for notifications (e.g., "YouTube Notifications")
+2. Copy the role ID (right-click the role → Copy ID)  
+3. Add `NOTIFICATION_ROLE_ID=role_id_here` to your .env file
+4. This role will be mentioned when new YouTube posts are shared
+
+### 3. Assign the Roles
+- Give the staff role to users who should have access to bot commands
+- Users without the staff role will not see any bot commands in Discord
+- Give the notification role to users who want to be notified about new posts
 
 ### 3. Deploy Commands
 After setting up the role, redeploy the commands:

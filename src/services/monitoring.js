@@ -190,17 +190,34 @@ class MonitoringService {
                 const channel = await this.client.channels.fetch(watch.discord_channel_id);
                 
                 if (channel) {
-                    // Create message content with role mention that will actually ping
-                    const roleMention = `<@&1292228881582919781>`;
-                    const messageContent = `${roleMention} New post from **${channelInfo.displayName}** ${post.url}`;
+                    // Get notification role ID from environment variables
+                    const notificationRoleId = process.env.NOTIFICATION_ROLE_ID;
+                    let messageContent = `New post from **${channelInfo.displayName}** ${post.url}`;
+                    let allowedMentions = {};
+                    
+                    // Add role mention at the beginning if configured
+                    if (notificationRoleId) {
+                        // Verify the role exists in the guild
+                        const role = channel.guild.roles.cache.get(notificationRoleId);
+                        if (role) {
+                            const roleMention = `<@&${notificationRoleId}>`;
+                            messageContent = `${roleMention} ${messageContent}`;
+                            allowedMentions = { roles: [notificationRoleId] };
+                            console.log(`🔔 Adding role mention for @${role.name} (${notificationRoleId})`);
+                        } else {
+                            console.log(`⚠️  Notification role ${notificationRoleId} not found in guild ${channel.guild.name}`);
+                        }
+                    } else {
+                        console.log(`ℹ️  No notification role configured - sending without role mention`);
+                    }
                     
                     await channel.send({
                         content: messageContent,
                         embeds: [embed],
-                        allowedMentions: { roles: ['1292228881582919781'] }
+                        allowedMentions: allowedMentions
                     });
                     
-                    console.log(`✅ Notified #${channel.name} in ${channel.guild.name} with role mention`);
+                    console.log(`✅ Notified #${channel.name} in ${channel.guild.name}`);
                 } else {
                     console.log(`⚠️  Could not find Discord channel ${watch.discord_channel_id}`);
                 }

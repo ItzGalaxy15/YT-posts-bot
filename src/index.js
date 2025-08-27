@@ -141,13 +141,35 @@ server.listen(PORT, () => {
     console.log(`🌐 Health check server running on port ${PORT}`);
 });
 
-// Self-restart mechanism to keep bot alive on free hosting platforms
-const RESTART_INTERVAL_MINUTES = process.env.RESTART_INTERVAL_MINUTES || 10;
+// Keep-alive mechanism for Render free tier
+const axios = require('axios');
+const KEEP_ALIVE_INTERVAL_MINUTES = 14; // Ping every 14 minutes (before 15-minute timeout)
+const KEEP_ALIVE_INTERVAL_MS = KEEP_ALIVE_INTERVAL_MINUTES * 60 * 1000;
+const RENDER_URL = process.env.RENDER_URL || 'https://cecilia-community-posts.onrender.com';
+
+// Function to ping the health endpoint
+const keepAlive = async () => {
+    try {
+        const response = await axios.get(`${RENDER_URL}/health`, {
+            timeout: 30000 // 30 second timeout
+        });
+        console.log(`💚 Keep-alive ping successful: ${response.status}`);
+    } catch (error) {
+        console.log(`❌ Keep-alive ping failed: ${error.message}`);
+    }
+};
+
+// Start keep-alive pinging
+setInterval(keepAlive, KEEP_ALIVE_INTERVAL_MS);
+console.log(`💓 Keep-alive will ping every ${KEEP_ALIVE_INTERVAL_MINUTES} minutes to prevent spin-down`);
+
+// Self-restart mechanism (reduced frequency since keep-alive handles staying awake)
+const RESTART_INTERVAL_MINUTES = process.env.RESTART_INTERVAL_MINUTES || 60; // Restart every hour instead
 const RESTART_INTERVAL_MS = RESTART_INTERVAL_MINUTES * 60 * 1000;
 
 // Set up restart timer
 setTimeout(() => {
-    console.log(`🔄 Scheduled restart after ${RESTART_INTERVAL_MINUTES} minutes to keep bot active`);
+    console.log(`🔄 Scheduled restart after ${RESTART_INTERVAL_MINUTES} minutes for maintenance`);
     console.log('👋 Gracefully shutting down for restart...');
     
     // Stop monitoring service
@@ -160,7 +182,7 @@ setTimeout(() => {
     process.exit(0);
 }, RESTART_INTERVAL_MS);
 
-console.log(`⏰ Bot will restart every ${RESTART_INTERVAL_MINUTES} minutes to maintain activity`);
+console.log(`⏰ Bot will restart every ${RESTART_INTERVAL_MINUTES} minutes for maintenance`);
 
 // Login with Discord token
 client.login(process.env.DISCORD_TOKEN);

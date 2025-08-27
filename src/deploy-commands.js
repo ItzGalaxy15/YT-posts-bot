@@ -25,9 +25,9 @@ for (const file of commandFiles) {
         // Add role-based permissions to each command
         const commandData = command.data.toJSON();
         
-        // Add default member permissions to restrict visibility
-        // This makes commands only visible to users with the specified role
-        commandData.default_member_permissions = '0'; // No permissions by default
+        // Set permissions to "Manage Server" instead of "0" to avoid onboarding issues
+        // This allows server administrators to see and use commands even during onboarding
+        commandData.default_member_permissions = '32'; // Manage Server permission (0x20 = 32)
         
         commands.push(commandData);
         console.log(`✅ Loaded command: ${command.data.name} (with role restrictions)`);

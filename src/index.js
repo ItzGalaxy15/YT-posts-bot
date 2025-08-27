@@ -10,7 +10,8 @@ const monitoringService = require('./services/monitoring');
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMembers // Needed to handle guild member updates and bypass onboarding
     ]
 });
 
@@ -45,6 +46,53 @@ client.once('ready', async () => {
     monitoringService.start(client);
     
     console.log('🚀 YouTube Posts Bot is fully operational!');
+});
+
+// Handle guild join - bypass onboarding automatically
+client.on('guildCreate', async guild => {
+    console.log(`📥 Bot joined new server: ${guild.name} (ID: ${guild.id})`);
+    
+    try {
+        // Try to bypass onboarding by completing it automatically
+        const botMember = await guild.members.fetch(client.user.id);
+        
+        if (botMember && botMember.pending) {
+            console.log(`⏳ Bot is pending in ${guild.name}, attempting to bypass onboarding...`);
+            
+            // Try to complete onboarding by editing the member
+            try {
+                await botMember.edit({ pending: false });
+                console.log(`✅ Successfully bypassed onboarding in ${guild.name}`);
+            } catch (onboardingError) {
+                console.log(`⚠️ Could not automatically bypass onboarding in ${guild.name}:`, onboardingError.message);
+                console.log(`🔧 Server admin needs to manually approve the bot or disable onboarding`);
+                
+                // Try to find a way to contact server admins
+                const owner = await guild.fetchOwner().catch(() => null);
+                if (owner) {
+                    console.log(`👑 Server owner: ${owner.user.tag} (${owner.id})`);
+                }
+            }
+        } else {
+            console.log(`✅ Bot successfully joined ${guild.name} without onboarding issues`);
+        }
+        
+        // Log guild info
+        console.log(`📊 Server info: ${guild.memberCount} members, Owner: ${guild.ownerId}`);
+        
+    } catch (error) {
+        console.error(`❌ Error handling guild join for ${guild.name}:`, error.message);
+    }
+});
+
+// Handle when bot member is updated (including onboarding completion)
+client.on('guildMemberUpdate', async (oldMember, newMember) => {
+    // Check if this is the bot and if onboarding status changed
+    if (newMember.id === client.user.id) {
+        if (oldMember.pending && !newMember.pending) {
+            console.log(`🎉 Bot onboarding completed in ${newMember.guild.name}! Bot is now fully active.`);
+        }
+    }
 });
 
 // Handle slash command interactions

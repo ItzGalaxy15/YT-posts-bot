@@ -47,7 +47,11 @@ module.exports = {
         const notificationRoleId = process.env.NOTIFICATION_ROLE_ID;
 
         try {
-            await interaction.deferReply();
+            // Reply with ephemeral message first (only visible to command user)
+            await interaction.reply({
+                content: `🔍 Fetching latest post...`,
+                ephemeral: true
+            });
 
             // Find the selected YouTube channel
             const selectedChannel = channelsConfig.channels.find(ch => ch.id === ytChannelId);
@@ -56,10 +60,6 @@ module.exports = {
                     content: '❌ Invalid YouTube channel selected.',
                 });
             }
-
-            await interaction.editReply({
-                content: `🔍 Fetching latest post from **${selectedChannel.displayName}**...`
-            });
 
             // Fetch posts from YouTube
             const result = await youtube.fetchChannelPosts(selectedChannel.handle);
@@ -165,10 +165,16 @@ module.exports = {
                 console.log(`ℹ️  No notification role configured - fetch command sending without role mention`);
             }
 
-            await interaction.editReply({
+            // Send the post as a new message in the channel (not a reply)
+            await interaction.channel.send({
                 content: messageContent,
                 embeds: [embed],
                 allowedMentions: allowedMentions
+            });
+
+            // Update the ephemeral reply to confirm success
+            await interaction.editReply({
+                content: `✅ Successfully fetched and posted latest content from **${selectedChannel.displayName}**!`
             });
 
             console.log(`Manual fetch: ${selectedChannel.displayName} -> ${latestPost.id} by ${interaction.user.tag}`);

@@ -141,5 +141,26 @@ server.listen(PORT, () => {
     console.log(`🌐 Health check server running on port ${PORT}`);
 });
 
+// Self-restart mechanism to keep bot alive on free hosting platforms
+const RESTART_INTERVAL_MINUTES = process.env.RESTART_INTERVAL_MINUTES || 10;
+const RESTART_INTERVAL_MS = RESTART_INTERVAL_MINUTES * 60 * 1000;
+
+// Set up restart timer
+setTimeout(() => {
+    console.log(`🔄 Scheduled restart after ${RESTART_INTERVAL_MINUTES} minutes to keep bot active`);
+    console.log('👋 Gracefully shutting down for restart...');
+    
+    // Stop monitoring service
+    monitoringService.stop();
+    
+    // Destroy client connection
+    client.destroy();
+    
+    // Exit process - hosting platform will restart it automatically
+    process.exit(0);
+}, RESTART_INTERVAL_MS);
+
+console.log(`⏰ Bot will restart every ${RESTART_INTERVAL_MINUTES} minutes to maintain activity`);
+
 // Login with Discord token
 client.login(process.env.DISCORD_TOKEN);

@@ -141,48 +141,32 @@ server.listen(PORT, () => {
     console.log(`🌐 Health check server running on port ${PORT}`);
 });
 
-// Keep-alive mechanism for Render free tier
-const axios = require('axios');
-const KEEP_ALIVE_INTERVAL_MINUTES = 14; // Ping every 14 minutes (before 15-minute timeout)
-const KEEP_ALIVE_INTERVAL_MS = KEEP_ALIVE_INTERVAL_MINUTES * 60 * 1000;
-const RENDER_URL = process.env.RENDER_URL || 'https://cecilia-community-posts.onrender.com';
+// DisCloud doesn't require keep-alive mechanisms - bots stay online 24/7
+console.log('🌟 Running on DisCloud - no keep-alive needed!');
 
-// Function to ping the health endpoint
-const keepAlive = async () => {
-    try {
-        const response = await axios.get(`${RENDER_URL}/health`, {
-            timeout: 30000 // 30 second timeout
-        });
-        console.log(`💚 Keep-alive ping successful: ${response.status}`);
-    } catch (error) {
-        console.log(`❌ Keep-alive ping failed: ${error.message}`);
-    }
-};
-
-// Start keep-alive pinging
-setInterval(keepAlive, KEEP_ALIVE_INTERVAL_MS);
-console.log(`💓 Keep-alive will ping every ${KEEP_ALIVE_INTERVAL_MINUTES} minutes to prevent spin-down`);
-
-// Self-restart mechanism (reduced frequency since keep-alive handles staying awake)
-const RESTART_INTERVAL_MINUTES = process.env.RESTART_INTERVAL_MINUTES || 60; // Restart every hour instead
-const RESTART_INTERVAL_MS = RESTART_INTERVAL_MINUTES * 60 * 1000;
-
-// Set up restart timer
-setTimeout(() => {
-    console.log(`🔄 Scheduled restart after ${RESTART_INTERVAL_MINUTES} minutes for maintenance`);
-    console.log('👋 Gracefully shutting down for restart...');
+// Optional: Self-restart mechanism for maintenance (disabled by default for DisCloud)
+if (process.env.ENABLE_AUTO_RESTART === 'true') {
+    const RESTART_INTERVAL_HOURS = process.env.RESTART_INTERVAL_HOURS || 24; // Restart daily
+    const RESTART_INTERVAL_MS = RESTART_INTERVAL_HOURS * 60 * 60 * 1000;
     
-    // Stop monitoring service
-    monitoringService.stop();
+    setTimeout(() => {
+        console.log(`🔄 Scheduled restart after ${RESTART_INTERVAL_HOURS} hours for maintenance`);
+        console.log('👋 Gracefully shutting down for restart...');
+        
+        // Stop monitoring service
+        monitoringService.stop();
+        
+        // Destroy client connection
+        client.destroy();
+        
+        // Exit process
+        process.exit(0);
+    }, RESTART_INTERVAL_MS);
     
-    // Destroy client connection
-    client.destroy();
-    
-    // Exit process - hosting platform will restart it automatically
-    process.exit(0);
-}, RESTART_INTERVAL_MS);
-
-console.log(`⏰ Bot will restart every ${RESTART_INTERVAL_MINUTES} minutes for maintenance`);
+    console.log(`⏰ Auto-restart enabled: Bot will restart every ${RESTART_INTERVAL_HOURS} hours`);
+} else {
+    console.log('⏰ Auto-restart disabled - bot will run continuously');
+}
 
 // Login with Discord token
 client.login(process.env.DISCORD_TOKEN);

@@ -39,11 +39,23 @@ client.once('ready', async () => {
     console.log(`🤖 Bot ready! Logged in as ${client.user.tag}`);
     console.log(`📊 Serving ${client.guilds.cache.size} server(s)`);
     
-    // Initialize database
-    await database.initialize();
+    // Initialize database with error handling
+    try {
+        await database.initialize();
+        console.log('💾 Database initialized successfully');
+    } catch (dbError) {
+        console.error('❌ Database initialization failed:', dbError.message);
+        console.error('⚠️ Bot will continue running but database features may not work');
+    }
     
-    // Start monitoring service
-    monitoringService.start(client);
+    // Start monitoring service with error handling
+    try {
+        monitoringService.start(client);
+        console.log('📡 Monitoring service started successfully');
+    } catch (monitorError) {
+        console.error('❌ Monitoring service failed to start:', monitorError.message);
+        console.error('⚠️ Bot will continue running but monitoring features may not work');
+    }
     
     console.log('🚀 YouTube Posts Bot is fully operational!');
 });
@@ -92,6 +104,26 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
         if (oldMember.pending && !newMember.pending) {
             console.log(`🎉 Bot onboarding completed in ${newMember.guild.name}! Bot is now fully active.`);
         }
+    }
+});
+
+// Handle guild leave/removal - log when and why the bot leaves
+client.on('guildDelete', guild => {
+    console.log(`📝 Bot removed from server: ${guild.name} (ID: ${guild.id})`);
+    console.log(`📊 Server had ${guild.memberCount} members`);
+    console.log(`🔍 Reason: ${guild.unavailable ? 'Server outage' : 'Kicked/banned or left'}`);
+});
+
+// Handle guild unavailable (Discord outages)
+client.on('guildUnavailable', guild => {
+    console.log(`⚠️ Server temporarily unavailable: ${guild.name} (ID: ${guild.id})`);
+});
+
+// Handle when bot is banned from a guild
+client.on('guildBanAdd', (ban) => {
+    if (ban.user.id === client.user.id) {
+        console.log(`🚫 Bot was BANNED from server: ${ban.guild.name}`);
+        console.log(`🚫 Ban reason: ${ban.reason || 'No reason provided'}`);
     }
 });
 

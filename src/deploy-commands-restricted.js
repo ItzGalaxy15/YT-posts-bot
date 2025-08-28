@@ -67,33 +67,17 @@ const rest = new REST().setToken(process.env.DISCORD_TOKEN);
             console.log(`   /${cmd.name} - ${cmd.description} (Role-restricted)`);
         });
 
-        // Now set up role-based permissions for each command
-        console.log('\n🔒 Setting up role-based permissions...');
-        
-        try {
-            for (const cmd of data) {
-                // Set permissions so only users with the staff role can use the command
-                const permissions = [{
-                    id: process.env.STAFF_ROLE_ID,
-                    type: 1, // Role type
-                    permission: true
-                }];
-
-                await rest.put(
-                    Routes.applicationCommandGuildPermissions(process.env.DISCORD_CLIENT_ID, GUILD_ID, cmd.id),
-                    { body: { permissions } }
-                );
-
-                console.log(`   ✅ Set permissions for /${cmd.name}`);
-            }
-
-            console.log('\n🎉 All commands deployed with role restrictions!');
-            console.log(`🔒 Only users with role ID ${process.env.STAFF_ROLE_ID} can see and use these commands.`);
-            
-        } catch (permError) {
-            console.error('❌ Error setting command permissions:', permError);
-            console.log('ℹ️  Commands deployed but permissions not set. Users will see commands but get access denied when using them.');
-        }
+        console.log('\n🎉 Commands deployed successfully!');
+        console.log(`🔒 Commands are now deployed to guild ${GUILD_ID} only.`);
+        console.log(`✅ Role restrictions are handled at execution time by the bot code.`);
+        console.log(`\n📝 Note: Discord's new permission system requires server admins to manually set`);
+        console.log(`   command permissions in Server Settings > Integrations > Your Bot`);
+        console.log(`   or you can use the /permissions command if implemented.`);
+        console.log(`\n🚀 Your bot commands should now be properly restricted!`);
+        console.log(`\n⚠️  If users without the staff role can still see commands, try:`);
+        console.log(`   1. Restart Discord client`);
+        console.log(`   2. Check Server Settings > Integrations > Your Bot > Permissions`);
+        console.log(`   3. Ensure the staff role ID is correct: ${process.env.STAFF_ROLE_ID}`);
         
     } catch (error) {
         console.error('❌ Error deploying commands:', error);

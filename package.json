@@ -8,9 +8,11 @@
     "dev": "nodemon src/index.js",
     "deploy": "node src/deploy-commands.js",
     "deploy:restricted": "node src/deploy-commands-restricted.js",
+    "deploy:staff-only": "node src/deploy-commands-staff-only.js",
     "build": "npm install",
     "setup": "npm install && npm run deploy",
-    "setup:restricted": "npm install && npm run deploy:restricted"
+    "setup:restricted": "npm install && npm run deploy:restricted",
+    "setup:staff-only": "npm install && npm run deploy:staff-only"
   },
   "engines": {
     "node": ">=18.0.0",

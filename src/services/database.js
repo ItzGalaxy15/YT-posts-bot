@@ -131,16 +131,32 @@ class DatabaseService {
                         published_at: publishedAt,
                         created_at: new Date().toISOString()
                     }
-                ])
+                ], {
+                    onConflict: 'post_id' // Specify the conflict column
+                })
                 .select();
 
             if (error) {
-                console.error('Error storing YouTube post:', error);
+                // Check if it's a duplicate key error (which is normal)
+                if (error.code === '23505' || error.message.includes('duplicate key')) {
+                    // This is expected - post already exists, just return success
+                    console.log(`📝 Post ${postId} already exists in database (this is normal)`);
+                    return { success: true, data: null, exists: true };
+                }
+                
+                // Only log unexpected errors
+                console.error('Unexpected error storing YouTube post:', error);
                 return { success: false, error: error.message };
             }
 
-            return { success: true, data: data[0] };
+            return { success: true, data: data[0], exists: false };
         } catch (error) {
+            // Check if it's a duplicate key error at the catch level too
+            if (error.code === '23505' || error.message.includes('duplicate key')) {
+                console.log(`📝 Post ${postId} already exists in database (this is normal)`);
+                return { success: true, data: null, exists: true };
+            }
+            
             console.error('Database error:', error);
             return { success: false, error: error.message };
         }

@@ -124,12 +124,22 @@ class MonitoringService {
             }
 
             // Store the latest post in database
-            await database.storeYouTubePost(
+            const storeResult = await database.storeYouTubePost(
                 ytChannelId,
                 latestPost.id,
                 latestPost.content,
                 latestPost.publishedAt
             );
+            
+            if (storeResult.success) {
+                if (storeResult.exists) {
+                    console.log(`💾 Post ${latestPost.id} already in database, no notification needed`);
+                } else {
+                    console.log(`💾 Stored new post ${latestPost.id} in database`);
+                }
+            } else {
+                console.error(`Failed to store post ${latestPost.id}:`, storeResult.error);
+            }
 
             // If it's a new post, notify all watching Discord channels
             if (isNewPost) {

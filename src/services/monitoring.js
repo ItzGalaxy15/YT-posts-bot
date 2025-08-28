@@ -108,22 +108,7 @@ class MonitoringService {
             // Get the most recent post
             const latestPost = postsResult.posts[0];
             
-            // Check if this post is new
-            let isNewPost = false;
-            
-            if (!latestStoredPost.success || !latestStoredPost.data) {
-                // No posts stored yet, this is the first check
-                isNewPost = true;
-                console.log(`First time checking ${channelInfo.displayName} - treating latest post as new`);
-            } else {
-                // Compare post IDs
-                if (latestPost.id !== latestStoredPost.data.post_id) {
-                    isNewPost = true;
-                    console.log(`New post detected for ${channelInfo.displayName}: ${latestPost.id}`);
-                }
-            }
-
-            // Store the latest post in database
+            // First, try to store the post to check if it already exists
             const storeResult = await database.storeYouTubePost(
                 ytChannelId,
                 latestPost.id,
@@ -131,19 +116,40 @@ class MonitoringService {
                 latestPost.publishedAt
             );
             
+            let isNewPost = false;
+            
             if (storeResult.success) {
                 if (storeResult.exists) {
-                    console.log(`💾 Post ${latestPost.id} already in database, no notification needed`);
+                    // Post already exists in database
+                    console.log(`💾 Post ${latestPost.id} already exists in database - no notification needed`);
+                    isNewPost = false;
                 } else {
-                    console.log(`💾 Stored new post ${latestPost.id} in database`);
+                    // This is a genuinely new post that was just stored
+                    console.log(`💾 Stored new post ${latestPost.id} in database - sending notification`);
+                    isNewPost = true;
                 }
             } else {
                 console.error(`Failed to store post ${latestPost.id}:`, storeResult.error);
+                
+                // Fallback: compare with latest stored post if database store failed
+                if (!latestStoredPost.success || !latestStoredPost.data) {
+                    console.log(`Database error but no previous post found - treating as new (fallback)`);
+                    isNewPost = true;
+                } else if (latestPost.id !== latestStoredPost.data.post_id) {
+                    console.log(`Database error but post ID differs from stored - treating as new (fallback)`);
+                    isNewPost = true;
+                } else {
+                    console.log(`Database error and post ID matches stored - skipping notification (fallback)`);
+                    isNewPost = false;
+                }
             }
 
-            // If it's a new post, notify all watching Discord channels
+            // Only notify if it's genuinely a new post
             if (isNewPost) {
+                console.log(`🔔 Sending notification for new post: ${latestPost.id}`);
                 await this.notifyDiscordChannels(watches, channelInfo, latestPost);
+            } else {
+                console.log(`⏭️  Skipping notification for existing post: ${latestPost.id}`);
             }
 
         } catch (error) {

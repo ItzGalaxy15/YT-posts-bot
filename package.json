@@ -7,8 +7,10 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "deploy": "node src/deploy-commands.js",
+    "deploy:restricted": "node src/deploy-commands-restricted.js",
     "build": "npm install",
-    "setup": "npm install && npm run deploy"
+    "setup": "npm install && npm run deploy",
+    "setup:restricted": "npm install && npm run deploy:restricted"
   },
   "engines": {
     "node": ">=18.0.0",

@@ -25,21 +25,12 @@ for (const file of commandFiles) {
         // Add role-based permissions to each command
         const commandData = command.data.toJSON();
         
-        // Define which commands should be visible to everyone on bot profile
-        const publicCommands = ['status', 'list', 'watchlist'];
-        
-        if (publicCommands.includes(commandData.name)) {
-            // Public commands - visible on bot profile and usable by users with "Use Application Commands"
-            // These will show on the bot profile but still have role checks in the command execution
-            commandData.default_member_permissions = null; // No permission restriction for visibility
-            console.log(`✅ Loaded command: ${command.data.name} (public - visible on profile)`);
-        } else {
-            // Management commands - restricted to "Manage Server" permission
-            commandData.default_member_permissions = '32'; // Manage Server permission (0x20 = 32)
-            console.log(`✅ Loaded command: ${command.data.name} (restricted - Manage Server only)`);
-        }
+        // Set permissions to "Manage Server" instead of "0" to avoid onboarding issues
+        // This allows server administrators to see and use commands even during onboarding
+        commandData.default_member_permissions = '32'; // Manage Server permission (0x20 = 32)
         
         commands.push(commandData);
+        console.log(`✅ Loaded command: ${command.data.name} (with role restrictions)`);
     } else {
         console.log(`⚠️  Command at ${filePath} is missing required "data" or "execute" property.`);
     }
